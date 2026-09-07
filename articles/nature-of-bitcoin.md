@@ -31,7 +31,7 @@ To unlock and spend the coins referenced in a transaction, the receiver must pre
 
 The spender also signs over the hash of this new transaction, creating a cryptographic link consisting of signatures back to the very first recorded transaction. Once a user signs and broadcasts a transaction containing UTXO inputs, it is validated independently by all nodes on the network and they cannot spend any of these UTXOs in a new transaction.
 
-![utxo model](https://file%2B.vscode-resource.vscode-cdn.net/Users/chukwudike/Portfolio/2026/bitcoin/btrust/fellowship/articles/images/Screenshot%202026-09-07%20at%205.44.22%E2%80%AFPM.png?version%3D1788799533981)
+![utxo model](./images/wk-0102/utxo-structure.png)
 
 It is standard practice to leave a small portion of coins unaccounted for as transaction fees e.g. if I have a UTXO with 10,000 satoshis (1 BTC equals 100 million satoshis) locked to my public key and I want to send half that amount to my friend, I can lock 5,000 satoshis to their public address in a new UTXO and transfer 4,000 satoshis back to my address. The leftover 1,000 satoshis are claimed by the miner who confirms this transaction as valid, as a way to encourage them to do the work of including their transaction in a new block but we’ll get to that in a bit.
 
@@ -39,13 +39,13 @@ Cryptographic hashes and signatures are notoriously difficult to break or manipu
 
 Another way cryptography shows up in Bitcoin is in the arrangement of transactions into a merkle tree data structure. Each leaf node in this tree represents a valid transaction and nodes are successively hashed till there is one hash left: the root of the merkle tree. A block consists of all the transactions from this tree and the block header, which includes the merkle root, the current timestamp, the hash of the previous block’s header, the Bitcoin protocol version running on the system of the user assembling the block, the target of the block, and the nonce (more on the last two later).
 
-![bitcoin block](https://file%2B.vscode-resource.vscode-cdn.net/Users/chukwudike/Portfolio/2026/bitcoin/btrust/fellowship/articles/images/Screenshot%202026-09-07%20at%205.44.13%E2%80%AFPM.png?version%3D1788799540541)
+![bitcoin block](./images/wk-0102/block-structure.png)
 
 Merkle trees save memory and time during verification because you need only the merkle root and a couple of intermediate node hashes of the tree to confirm a transaction is really a part of a particular block.
 
 To reiterate, any attempt to forge a transaction falls apart immediately. Any attempt to include an invalid transaction in a block also breaks down immediately. Since each block contains only valid transactions and its header holds the hash of its parent block, the entire blocks of transactions are chained together in a virtually unbreakable chain. Thus, we can surmise that Bitcoin’s ledger holds only valid transactions. This is all easily verifiable public data, hosted across a distributed network and available to any every person on the planet.
 
-![crypto safeguards in bitcoin](https://file%2B.vscode-resource.vscode-cdn.net/Users/chukwudike/Portfolio/2026/bitcoin/btrust/fellowship/articles/images/Screenshot%202026-09-07%20at%205.23.10%E2%80%AFPM.png?version%3D1788798792035)
+![crypto safeguards in bitcoin](./images/wk-0102/crypto-attacks.png)
 
 At this point, we have answered questions 2 and 3. Let us move on to the last two, introducing two of the interconnected disciplines along the way.
 
@@ -71,7 +71,7 @@ Theoretically, in that scenario, they could rewrite the chain history by reorgan
 
 Suppose a very wealthy malicious actor has the necessary funds to cross the obvious hurdle and purchase the number of mining rigs required for this attack, in tune of tens of billions of dollars. For one, that would be logistically impractical as the global semi-conductor manufacturing industry would have to pause orders from other legitimate customers to produce the chips required by the Application-Specific Integrated Circuits (ASICs) used for Bitcoin mining. Beyond supply chain issues, operational costs like power and storage would heavily discourage anyone from even attempting this. This is how PoW keeps the nodes on Bitcoin’s network, and by extension, its users honest and reliable.
 
-![sybil vs 51% attacks](https://file%2B.vscode-resource.vscode-cdn.net/Users/chukwudike/Portfolio/2026/bitcoin/btrust/fellowship/articles/images/Screenshot%202026-09-07%20at%205.23.19%E2%80%AFPM.png?version%3D1788798794374)
+![sybil vs 51% attacks](./images/wk-0102/51-vs-sybil-vs-51.png)
 
 Another important economic concept in Bitcoin is the deflationary property it shares with gold and silver – at least before we start mining asteroids in space. Unlike fiat currency, Bitcoin has a hard limit. Only 21 million coins will ever be minted into existence from the mining process; with 20 million mined already, that leaves less than a million left.
 
@@ -81,7 +81,7 @@ Our four main questions have been answered. Seemingly unrelated components acros
 
 Computing is the basis of the math and cryptography guarantee the game theoretic consensus mechanism which plays out in mining that secures the distributed ledger hosted across the nodes, which are economically incentivized to connect to and act honestly in the computer network.
 
-![bitcoin layers](https://file%2B.vscode-resource.vscode-cdn.net/Users/chukwudike/Portfolio/2026/bitcoin/btrust/fellowship/articles/images/Screenshot%202026-09-07%20at%205.22.59%E2%80%AFPM.png?version%3D1788798786411)
+![bitcoin layers](./images/wk-0102/disciplines-cycle.png)
 
 Besides the disciplines we discussed, other minor disciplines also surface among participants of the Bitcoin network. Environmental science and engineering are obvious ones as we transition to clean and renewable energy solutions for mining bitcoin. Law and public policy come into play as nation states become actual players in the system, raising questions of identity and regulation.
 
@@ -103,4 +103,4 @@ Hasu. “The Onion Model of Blockchain Security, Part 1.” The Onion Model of B
 
 
 
-A.I was used for fact-checking and to generate draft images for this article
+A.I was used for fact-checking and to generate images for this article
