@@ -98,12 +98,12 @@ Little did I know that the group of people were actually open-source contributor
   
 ## REFERENCES
 
-- Nakamoto, S. (2008). Bitcoin: A Peer-to-Peer Electronic Cash System. Bitcoin.org. Bitcoin Whitepaper
-- Antonopoulos, A. M., & Harding, D. A. (2023). Mastering Bitcoin: Programming the Open Blockchain (3rd ed.). O'Reilly Media.
-- Learn Me a Bitcoin. Learn Me a Bitcoin
-Arvind Narayanan, Jeremy Clark. “Bitcoin’s Academic Pedigree”Bitcoin’s Academic Pedigree. ACM Queue.
-- b10c. “The Incomplete History of Bitcoin Development.” The Incomplete History of Bitcoin Development
-- Hasu. “The Onion Model of Blockchain Security, Part 1.” The Onion Model of Blockchain Security, Part 1
+- Nakamoto, S. (2008). _Bitcoin: A Peer-to-Peer Electronic Cash System._ Bitcoin.org. [Bitcoin Whitepaper](https://bitcoin.org/en/bitcoin-paper).
+- Antonopoulos, A. M., & Harding, D. A. (2023). _Mastering Bitcoin: Programming the Open Blockchain (3rd ed.)_. [Mastering Bitcoin](https://github.com/bitcoinbook/bitcoinbook).
+- Learn Me a Bitcoin. [Learn Me a Bitcoin](https://learnmeabitcoin.com/)
+- Arvind Narayanan, Jeremy Clark. _Bitcoin’s Academic Pedigree._ [ACM Queue](https://queue.acm.org/doi/10.1145/3134434.3136559).
+- b10c. _“The Incomplete History of Bitcoin Development_”. [b10c.me](https://b10c.me/blog/004-the-incomplete-history-of-bitcoin-development/)
+- Hasu. _“The Onion Model of Blockchain Security, Part 1”_. [Deribit Insights](https://insights.deribit.com/market-research/the-onion-model-of-blockchain-security-part-1/)
 
   
 A.I was used for fact-checking and to generate images for this article
