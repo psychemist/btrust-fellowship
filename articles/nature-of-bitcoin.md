@@ -93,14 +93,17 @@ These are some of the mental models about Bitcoin I am forming in the Btrust Fel
 
 Little did I know that the group of people were actually open-source contributors that have built the system into what it is and academic researchers from whom Satoshi borrowed a number of Bitcoin’s primitives and creatively engineered into a truly inventive architecture that ushered in a new age of global finance and collaboration.
 
-REFERENCES
-Nakamoto, S. (2008). Bitcoin: A Peer-to-Peer Electronic Cash System. Bitcoin.org. Bitcoin Whitepaper
-Antonopoulos, A. M., & Harding, D. A. (2023). Mastering Bitcoin: Programming the Open Blockchain (3rd ed.). O'Reilly Media.
-Learn Me a Bitcoin. Learn Me a Bitcoin
+
+
+  
+## REFERENCES
+
+- Nakamoto, S. (2008). Bitcoin: A Peer-to-Peer Electronic Cash System. Bitcoin.org. Bitcoin Whitepaper
+- Antonopoulos, A. M., & Harding, D. A. (2023). Mastering Bitcoin: Programming the Open Blockchain (3rd ed.). O'Reilly Media.
+- Learn Me a Bitcoin. Learn Me a Bitcoin
 Arvind Narayanan, Jeremy Clark. “Bitcoin’s Academic Pedigree”Bitcoin’s Academic Pedigree. ACM Queue.
-b10c. “The Incomplete History of Bitcoin Development.” The Incomplete History of Bitcoin Development
-Hasu. “The Onion Model of Blockchain Security, Part 1.” The Onion Model of Blockchain Security, Part 1
+- b10c. “The Incomplete History of Bitcoin Development.” The Incomplete History of Bitcoin Development
+- Hasu. “The Onion Model of Blockchain Security, Part 1.” The Onion Model of Blockchain Security, Part 1
 
-
-
+  
 A.I was used for fact-checking and to generate images for this article
