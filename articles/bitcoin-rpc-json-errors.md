@@ -17,7 +17,7 @@ I will attempt to recreate that journey in this article.
 Start your bitcoin daemon with this command:
 
 ```sh
-bitcoind -regtest daemon
+bitcoind -regtest -daemon
 ```
 
 You can start the node in any network of your choice.
