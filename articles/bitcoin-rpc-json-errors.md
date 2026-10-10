@@ -2,7 +2,7 @@
 
 I am currently midway through my Btrust Open Source Fellowship. This month, we have been interacting with Bitcoin Core using RPC commands, running functional and unit tests, reading and reviewing pull requests, and learning how best to kickoff contributing in the Bitcoin ecosystem.
 
-By the by, over these past few weeks, I spent a reasonable amount of time tracing Bitcoin Core CLI commands from the RPC into the codebase, seeing where exactly the commands are implemented. I must have more than 50 commands overall, ranging from commands that printed info about the blockchain, node, and network to commands used for creating and manipulating wallets, addresses, and transactions.
+By the by, over these past few weeks, I spent a reasonable amount of time tracing Bitcoin Core CLI commands from the RPC into the codebase, seeing where exactly the commands are implemented. I must have run more than 50 commands overall, ranging from commands that printed info about the blockchain, node, and network to commands used for creating and manipulating wallets, addresses, and transactions.
 
 Sometimes, I noticed that I would get errors after executing some of these commands. They were usually of the form:
 
@@ -14,13 +14,19 @@ From the error messages, I could infer that the issue was from sending strings t
 
 I will attempt to recreate that journey in this article.
 
+bitcoind is the Bitcoin Core daemon. This is what runs in the background when you start Bitcoin Core on your computer. It is a multi-threaded C++ program, handles concurrent processes and is fully portable between Linux, MacOS, and Windows machines. It is headless meaning that it operates totally in the terminal without a graphical user interface.
+
 Start your bitcoin daemon with this command:
 
 ```sh
 bitcoind -regtest -daemon
 ```
 
-You can start the node in any network of your choice.
+You can start the node in any network of your choice, including chain (mainnet), regtest, testnet (testnet and testnet4), and signet.
+
+
+`bitcoin-cli` is a component of Bitcoin Core. It is the JSON-RPC client for users to interact with a running node from the command line. The bitcoind daemon must be running for this tool to work as it sends commands to the server process in the background.
+
 Run these four commands to return the same block hash on a running regtest node:
 
 ```sh
@@ -34,13 +40,13 @@ Notice that the last one fails with an error message.
 
 The difference between them is in how the shell processes each of them. In the second and third commands, the shell removes the single and double quotes and passes the text `0` to `bitcoin-cli`. In the fourth, it removes the single quotes but preserves the double quotes inside them. So, the client receives the text `"0"`.
 
-`bitcoin-cli` parses this argument as JSON. If it receives a `0`, it turns it a number. It turns `"0"` to a string based on JSON rules. This specific RPC command takes a numeric block height for, so the server rejects the string input. You can find the RPC command logic in the [getblockhash implementation](https://github.com/bitcoin/bitcoin/blob/acdb32693417c1b6596edfbdd19ab793c010d34f/src/rpc/blockchain.cpp).
+`bitcoin-cli` parses these arguments as JSON. If it receives a `0`, it turns it a number. It turns `"0"` to a string based on JSON rules. This specific RPC command takes a numeric block height for, so the server rejects the string input. You can find the RPC command logic in the [getblockhash implementation](https://github.com/bitcoin/bitcoin/blob/acdb32693417c1b6596edfbdd19ab793c010d34f/src/rpc/blockchain.cpp).
 
 ### Prerequisite Scripting
 
 For the scripts below, I used or Zsh on macOS but you can use Bash on Linux and any other combinations of the four. 
 
-We will be running the rest of these commands in the same shell so the variables and function remain available. Copy and paste this entire script into your terminal.
+We will be running the rest of these commands in the same shell so the variables and function remain available. Copy and paste this entire script into your terminal then execute it.
 
 ```sh
 rpc_dir=$(mktemp -d)
@@ -57,7 +63,9 @@ rpc() {
 }
 ```
 
-The first line creates a variable that stores the temporary RPC directory. Then, we create a configuration file for the Bitcoin node and save it in that directory. We start a new Bitcoin node using certain configurations and create a bitcoin-cli `rpc` wrapper function scoped to the same directory and port on every call. `"$@"` preserves the arguments you pass to the function from the shell. If port 29457 is occupied o your machine, choose another port in both places.
+The first line creates a variable that stores the temporary RPC directory. Then, we create a configuration file for the Bitcoin node and save it in that directory. 
+
+We start a new Bitcoin node using certain configurations and create a bitcoin-cli `rpc` wrapper function scoped to the same directory and port on every call. `"$@"` preserves the arguments you pass to the function from the shell. If port 29457 is occupied on your machine, choose another port in both places.
 
 Now repeat the opening commands:
 
@@ -82,15 +90,18 @@ The fourth produces an error with the message:
 
 ### An Argument's Journey Through Three Layers
 
-The commands follows this execution path:
-- From the terminal commands, they are processed by the shell. The shell decides which characters reach our small program and where each argument begins and ends. 
-- From our wrapper, the argument texts are received by bitcoin-cli and it decides whether to keep an argument as a string or parse it as JSON. This decision depends on the RPC method and parameter.
+Every argument passed through to Bitcoin Core via the `rpc` command follows this execution path:
+
+- From the terminal commands, they are processed by the shell. The shell decides which characters reach our small program and where each argument begins and ends.
+- From our wrapper, the arguments' texts are received by bitcoin-cli and it decides whether to keep an argument as a string or parse it as JSON. This decision depends on the RPC method and parameter.
 - A JSON request is created containing strictly typed values and the node checks it before executing the RPC. Server validation is run before the RPC logic in the Bitcoin Core implementation follows
 - The result of the code execution is sent back as a JSON response, or an error if it failed
 
 ### Making the Conversion Visible
 
-Bitcoin Core has two testing RPC methods, `echo` and `echojson`, which return their arguments. Their server behavior is the same while the client enables JSON conversion for `echojson`. They are useful for this experiment, although they are light testing commands rather than an application API. Here is where you can read their [implementation and help text](https://github.com/bitcoin/bitcoin/blob/acdb32693417c1b6596edfbdd19ab793c010d34f/src/rpc/node.cpp).
+Bitcoin Core has two testing RPC methods, `echo` and `echojson`, that only return their arguments. Their behavior is basically the same server-side while the client enables JSON conversion for `echojson` only.
+
+They are useful for this experiment, although they are light testing commands rather than an application API. Here is where you can read their [implementation and help text](https://github.com/bitcoin/bitcoin/blob/acdb32693417c1b6596edfbdd19ab793c010d34f/src/rpc/node.cpp).
 
 Run:
 
@@ -116,7 +127,7 @@ The result contains a number, a boolean, and an array:
 [0, false, ["a", "b"]]
 ```
 
-The shell supplied the same argument text in both cases. The conversion rules behind each method produced different JSON values. Note that while `echo` returns an array with values escaped using the `\` character, `echojson` prints a valid, formatted JSON array. 
+The shell used the same argument text in both cases. The conversion rules for each method produced different JSON values. Note that while `echo` returns an array with values escaped using the `\` character, `echojson` prints a valid, formatted JSON array.l
 
 These commands can also explicitly distinguish booleans from strings:
 
@@ -138,7 +149,7 @@ Let's take a look at this deliberately broken command:
 rpc echojson "{"data":"6869"}"
 ```
 
-In Bash and Zsh, the double quotes in that expression open and close shell quoting. They are removed during processing. The client receives: `{data:6869}`.
+In Bash and Zsh, the double quotes in that expression open and close shell quoting. They are removed during processing and the client receives: `{data:6869}`.
 
 That is invalid JSON because the object key lacks double quotes. The client returns:
 
@@ -170,15 +181,15 @@ rpc echojson '["hello world", false, 0]'
 
 Here, the outer array is the RPC's returned argument list. Its single element is the array we supplied as argument to the command.
 
-Single quotes are convenient because they preserve the double quotes that JSON requires. When shell variable expansion is needed, double quotes can work, but JSON quotes that are embedded in the argument list must be escaped. For larger input structures, it is easier to allow a JSON library construct the value instead of assembling them by hand.
+Single quotes are convenient because they preserve the double quotes that JSON needs. When variable expansion is needed, double quotes can work, but JSON quotes that are embedded in the argument list must be escaped. For larger input structures, it is easier to allow a JSON library construct the value instead of assembling them by hand.
 
-This is very important to note because I encountered majority of the JSON errors while interacting with arrays as input.
+This is very important to note because I encountered majority of the JSON errors while interacting with arrays as an input.
 
 ### Apply it to a Transaction RPC
 
 Let's apply this to a real RPC method: `createrawtransaction`. 
 
-This command accepts two required JSON array arguments, _inputs and outputs_, and two optional arguments, _locktime and replaceable_, a numeric and a boolean type respectively. Itcreates a transaction, spending the given inputs and creating new outputs, which can be addresses or data, and returns a hex-encoded raw transaction.
+This command accepts two required JSON array arguments, _inputs and outputs_, and two optional arguments, _locktime and replaceable_, a numeric and a boolean type respectively. It creates a transaction, spending the given inputs and creating new outputs, which can be addresses or data, and returns a hex-encoded raw transaction.
 
 The examples below pays 0.01 BTC to a regtest address and returns 49.9899 BTC to a change address, leaving a fee of 0.0001 BTC from a 50 BTC input. The values shown here are from a regtest wallet. The input was a mature, unspent coinbase output while the payment and change addresses are actual regtest addresses.
 
@@ -233,6 +244,7 @@ rpc createrawtransaction \
 ```
 
 This fails before the node receives the RPC request. With default shell settings:
+
 - **Zsh** treats the brackets as a filename matching pattern and reports `no matches found`.
 - **Bash** expands the braces and removes the double quotes. The client then receives malformed arguments and reports `Error parsing JSON`.
 
@@ -249,7 +261,7 @@ This succeeds and returns unsigned transaction hex. The outer single quotes keep
 
 If you repeat this with the output array, it will error with this message: `error: Error parsing JSON` because the shell removes the JSON double quotes and expands the comma-separated text into separate arguments, leading to incorrectly parsed JSON. 
 
-The values used in these tests are fixed and obtained from my wallet. To test these on transactions using your own wallet, obtain an unspent input transaction with `listunspent`, a payment address with `getnewaddress`, and a change address with `getrawchangeaddress`. Substitute that input's actual `txid` and `vout`, and calculate change from its amount, the payment, and the intended fee. 
+The values used in these tests are fixed and obtained from my wallet. To test these on transactions using your own wallet, obtain an unspent input transaction with `listunspent`, a payment address with `getnewaddress`, and a change address with `getrawchangeaddress`. Substitute the input's actual `txid` and `vout`, and calculate change from its amount, the payment, and the intended fee. 
 
 The command's construction behavior is described in the [RPC reference](https://developer.bitcoin.org/reference/rpc/createrawtransaction.html/).
 
@@ -267,7 +279,7 @@ Output:
 [{"data": "6869"}, false]
 ```
 
-They do not remove the need to preserve JSON syntax. Without the single quotes in argo, we get an error:
+They do not remove the need to preserve JSON syntax. Without the single quotes in arg0, we get an error:
 
 ```sh
 rpc -named echojson arg0={"data":"6869"} arg1=false
@@ -299,7 +311,7 @@ Note that I mixed both named and unnamed arguments and still got a valid txid.
 
 ### String Conversion
 
-For an ordinary string parameter, you can also supply text directly without quotes. To demo this, we will create a new wallet using a name without quotes then request an address with a quoted-enclosed label that contains a space:
+For an ordinary string parameter, you can also supply text directly without quotes. To demo this, we will create a new wallet using a name without quotes then request an address with a quoted label that contains a space:
 
 ```sh
 rpc createwallet quotes-demo
@@ -322,11 +334,11 @@ This is a handy table for tracking how each argument type is handled by the clie
 
 | Format           | Client behavior                                                           |
 | ---------------- | ------------------------------------------------------------------------- |
-| `JSON`           | Parse the argument as JSON; report an error if parsing fails              |
-| `STRING`         | Preserve the argument as a string.                                        |
-| `JSON_OR_STRING` | Try JSON parsing; preserve the original text as a string if parsing fails |
+| `JSON`           | Parse the argument as JSON and report an error if parsing fails              |
+| `STRING`         | Preserve the argument as a string                                         |
+| `JSON_OR_STRING` | Try JSON parsing then preserve the original text as a string if parsing fails |
 
-An argument without a matching conversion entry is also preserved as a string. Explicit string entries additionally help differentiate between positional arguments and named arguments  containing `=` .
+An argument without a matching conversion is also preserved as a string. Explicit string entries additionally help differentiate between positional arguments and named arguments  containing `=` .
 
 ### Bonus Exercise
 
@@ -349,7 +361,7 @@ Before changing quotes at random, ask what text reached the client and what valu
 
 ### Final Words
 
-Your next RPC interactions can start with the same sequence we took: identify the shell arguments, inspect its client conversion code, and read the server's RPC parameter definition. Hopefully, this helps you understand errors and make less of them as you continue your Bitcoin journey.
+I hope your next interactions with the Bitcoin Core RPC can follow the same sequence we took inthis article: identify the shell arguments, inspect their client conversion code, and read the server's RPC parameters. Hopefully, this helps you understand errors and make less of them as you continue your Bitcoin journey.
 
 If you started a regtest node specifically for this exercise, stop it when you finish:
 
